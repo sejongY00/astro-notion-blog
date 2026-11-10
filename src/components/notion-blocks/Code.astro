@@ -1,5 +1,6 @@
 ---
 import Prism from 'prismjs'
+import 'prismjs/components/prism-bash'
 import 'prismjs/components/prism-css'
 import 'prismjs/components/prism-diff'
 import 'prismjs/components/prism-docker'
@@ -26,8 +27,45 @@ const code = block.Code.RichTexts.map(
   (richText: interfaces.RichText) => richText.Text.Content
 ).join('')
 const language = block.Code.Language.toLowerCase()
-const grammer =
-  Prism.languages[language.toLowerCase()] || Prism.languages.javascript
+
+// Notion 언어 이름 → Prism 문법 이름. 없는 언어는 색 없이 그대로 보여준다.
+const prismAlias: Record<string, string> = {
+  shell: 'bash',
+  'plain text': '',
+  dockerfile: 'docker',
+}
+const prismName = language in prismAlias ? prismAlias[language] : language
+const grammer = prismName ? Prism.languages[prismName] : undefined
+const escapeHtml = (text: string) =>
+  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const highlighted = grammer
+  ? Prism.highlight(code, grammer, prismName)
+  : escapeHtml(code)
+
+// 코드 블록 오른쪽 위에 보여줄 언어 이름
+const languageLabels: Record<string, string> = {
+  'plain text': 'Plain text',
+  bash: 'Bash',
+  shell: 'Shell',
+  javascript: 'JavaScript',
+  typescript: 'TypeScript',
+  json: 'JSON',
+  yaml: 'YAML',
+  docker: 'Dockerfile',
+  dockerfile: 'Dockerfile',
+  python: 'Python',
+  go: 'Go',
+  html: 'HTML',
+  css: 'CSS',
+  sql: 'SQL',
+  markdown: 'Markdown',
+}
+const languageLabel =
+  languageLabels[language] ||
+  language.charAt(0).toUpperCase() + language.slice(1)
+
+const lineCount = code.replace(/\n$/, '').split('\n').length
+const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1).join('\n')
 ---
 
 <div class="code">
@@ -38,12 +76,16 @@ const grammer =
         <pre class="mermaid">{code}</pre>
       ) : (
         <>
-          <div>
+          <div class="toolbar">
+            <span class="language">{languageLabel}</span>
             <button class="copy" data-code={code} data-done-text="복사됨">
               복사
             </button>
           </div>
-          <pre><code set:html={Prism.highlight(code, grammer, language)} /></pre>
+          <div class="body">
+            <pre class="line-numbers" aria-hidden="true">{lineNumbers}</pre>
+            <pre><code set:html={highlighted} /></pre>
+          </div>
         </>
       )
     }
@@ -85,10 +127,18 @@ const grammer =
     background: #2d2d2d;
     border-radius: 10px;
   }
-  .code > div div {
+  .toolbar {
     position: absolute;
     top: 10px;
     right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .language {
+    font-family: var(--font-heading);
+    font-size: 12px;
+    color: #999;
   }
   .code button.copy {
     display: block;
@@ -101,17 +151,30 @@ const grammer =
     line-height: 1.6;
     cursor: pointer;
   }
+  .body {
+    display: flex;
+  }
   .code pre {
-    display: block;
-    overflow: auto;
-    padding: 16px 70px 16px 18px;
+    margin: 0;
+    padding: 16px 18px;
     color: #ccc;
     font-family: var(--font-mono);
     font-size: 14px;
     line-height: 1.6;
     white-space: pre;
-    width: 100px;
-    min-width: 100%;
+  }
+  .code pre.line-numbers {
+    flex: none;
+    padding-right: 12px;
+    border-right: 1px solid #555;
+    color: #777;
+    text-align: right;
+    user-select: none;
+  }
+  .code pre:not(.line-numbers) {
+    flex: 1;
+    min-width: 0;
+    padding-right: 150px;
     overflow-x: auto;
     &::-webkit-scrollbar {
       height: 10px;
