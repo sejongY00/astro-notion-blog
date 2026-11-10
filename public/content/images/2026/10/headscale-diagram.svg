@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" font-family="Pretendard, 'Noto Sans KR', sans-serif">
+  <rect width="1200" height="600" fill="#ffffff"></rect>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"></path></marker>
+    <marker id="b" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"></path></marker>
+    <marker id="bs" markerWidth="10" markerHeight="10" refX="1" refY="5" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#2563eb"></path></marker>
+  </defs>
+
+  
+  <rect x="40" y="40" width="320" height="520" rx="14" fill="#f3f6fb" stroke="#c9d3e3"></rect>
+  <text x="64" y="80" font-size="22" font-weight="700" fill="#1f2937">외부 기기</text>
+  <text x="64" y="106" font-size="15" fill="#6b7280">Tailscale 공식 앱 그대로</text>
+  <g font-size="16" fill="#1f2937">
+    <rect x="64" y="130" width="272" height="54" rx="8" fill="#ffffff" stroke="#d6dde9"></rect>
+    <text x="84" y="163">iPhone (모바일 데이터)</text>
+    <rect x="64" y="196" width="272" height="54" rx="8" fill="#ffffff" stroke="#d6dde9"></rect>
+    <text x="84" y="229">노트북 (Windows · macOS)</text>
+  </g>
+  <text x="64" y="290" font-size="15" fill="#374151">로그인 서버만 바꾼다</text>
+  <text x="64" y="314" font-size="15" fill="#2563eb">집 headscale 주소</text>
+  <text x="64" y="520" font-size="15" fill="#6b7280">업데이트는 앱스토어에 맡긴다</text>
+
+  
+  <rect x="560" y="40" width="600" height="520" rx="14" fill="#fdf6ec" stroke="#e8d3b0"></rect>
+  <text x="584" y="80" font-size="22" font-weight="700" fill="#1f2937">SEJONG-NAS (Docker)</text>
+
+  <rect x="590" y="105" width="250" height="70" rx="8" fill="#ffffff" stroke="#e5d5bb"></rect>
+  <text x="608" y="134" font-size="17" font-weight="600" fill="#1f2937">Caddy</text>
+  <text x="608" y="160" font-size="14" fill="#6b7280">vpn · hs 서브도메인 (443)</text>
+
+  <rect x="590" y="205" width="250" height="115" rx="8" fill="#ffffff" stroke="#e5d5bb"></rect>
+  <text x="608" y="234" font-size="17" font-weight="600" fill="#1f2937">headscale v0.29</text>
+  <text x="608" y="260" font-size="14" fill="#374151">제어 서버 (/ts2021)</text>
+  <text x="608" y="282" font-size="14" fill="#374151">내장 DERP (/derp)</text>
+  <text x="608" y="304" font-size="14" fill="#374151">STUN 3478/udp</text>
+
+  <rect x="880" y="105" width="250" height="70" rx="8" fill="#ffffff" stroke="#e5d5bb"></rect>
+  <text x="898" y="134" font-size="17" font-weight="600" fill="#1f2937">Headplane 0.7</text>
+  <text x="898" y="160" font-size="14" fill="#6b7280">관리 UI</text>
+
+  <rect x="880" y="205" width="250" height="115" rx="8" fill="#ffffff" stroke="#e5d5bb"></rect>
+  <text x="898" y="234" font-size="17" font-weight="600" fill="#1f2937">Gitea</text>
+  <text x="898" y="260" font-size="14" fill="#374151">OIDC 로그인</text>
+  <text x="898" y="282" font-size="14" fill="#374151">계정 발급 = VPN 권한</text>
+
+  <rect x="590" y="385" width="540" height="90" rx="8" fill="#ffffff" stroke="#e5d5bb"></rect>
+  <text x="608" y="416" font-size="17" font-weight="600" fill="#1f2937">tailscale 노드 (sejong-nas)</text>
+  <text x="608" y="444" font-size="14" fill="#374151">subnet route 192.168.50.0/24 광고 · host 네트워크</text>
+
+  <text x="590" y="520" font-size="15" fill="#374151">→ 집 LAN 192.168.50.0/24 (DSM · 각종 서비스)</text>
+
+  
+  <line x1="715" y1="175" x2="715" y2="201" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"></line>
+  <line x1="840" y1="140" x2="876" y2="140" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"></line>
+  <line x1="880" y1="175" x2="844" y2="210" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"></line>
+  <line x1="840" y1="262" x2="876" y2="262" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"></line>
+  <line x1="715" y1="320" x2="715" y2="381" stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"></line>
+  <text x="727" y="357" font-size="13" fill="#6b7280">노드 목록 · 키 배포</text>
+
+  
+  <line x1="364" y1="140" x2="586" y2="140" stroke="#9ca3af" stroke-width="2.5" marker-end="url(#a)"></line>
+  <text x="475" y="128" font-size="14" fill="#6b7280" text-anchor="middle">제어 · DERP (HTTPS)</text>
+  <line x1="364" y1="262" x2="586" y2="262" stroke="#9ca3af" stroke-width="2.5" marker-end="url(#a)"></line>
+  <text x="475" y="250" font-size="14" fill="#6b7280" text-anchor="middle">STUN 3478/udp</text>
+  <line x1="368" y1="430" x2="586" y2="430" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="8 6" marker-start="url(#bs)" marker-end="url(#b)"></line>
+  <text x="475" y="416" font-size="14" fill="#2563eb" text-anchor="middle">WireGuard 직접 연결</text>
+  <text x="475" y="456" font-size="13" fill="#6b7280" text-anchor="middle">실패하면 DERP로 중계</text>
+</svg>

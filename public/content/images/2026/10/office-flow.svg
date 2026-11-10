@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" font-family="Pretendard, 'Noto Sans KR', sans-serif">
+  <rect width="1200" height="560" fill="#ffffff"></rect>
+  
+  <rect x="40" y="40" width="500" height="480" rx="14" fill="#f3f6fb" stroke="#c9d3e3"></rect>
+  <text x="64" y="80" font-size="22" font-weight="700" fill="#1f2937">브라우저</text>
+  <text x="64" y="106" font-size="15" fill="#6b7280">서버로 파일을 보내지 않는 경로</text>
+  <g font-size="16" fill="#1f2937">
+    <rect x="64" y="130" width="452" height="54" rx="8" fill="#ffffff" stroke="#d6dde9"></rect>
+    <text x="84" y="163">HWP · HWPX — rhwp (WASM)</text>
+    <rect x="64" y="196" width="452" height="54" rx="8" fill="#ffffff" stroke="#d6dde9"></rect>
+    <text x="84" y="229">CAD (DXF · DWG) — MLightCAD</text>
+    <rect x="64" y="262" width="452" height="54" rx="8" fill="#ffffff" stroke="#d6dde9"></rect>
+    <text x="84" y="295">3D — Online 3D Viewer</text>
+    <rect x="64" y="328" width="452" height="54" rx="8" fill="#ffffff" stroke="#d6dde9"></rect>
+    <text x="84" y="361">다이어그램 — Excalidraw · Mermaid · draw.io</text>
+    <rect x="64" y="394" width="452" height="54" rx="8" fill="#ffffff" stroke="#d6dde9"></rect>
+    <text x="84" y="427">스캐너 — OpenCV.js + PP-OCRv5 (ONNX)</text>
+  </g>
+  <text x="64" y="490" font-size="15" fill="#2563eb">결과는 다운로드로만 → 탭을 닫으면 끝</text>
+
+  
+  <line x1="548" y1="250" x2="652" y2="250" stroke="#9ca3af" stroke-width="2.5" marker-end="url(#a)"></line>
+  <text x="600" y="236" font-size="14" fill="#6b7280" text-anchor="middle">오피스 · PDF만</text>
+  <text x="600" y="274" font-size="13" fill="#6b7280" text-anchor="middle">세션 쿠키</text>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"></path></marker></defs>
+
+  
+  <rect x="660" y="40" width="500" height="480" rx="14" fill="#fdf6ec" stroke="#e8d3b0"></rect>
+  <text x="684" y="80" font-size="22" font-weight="700" fill="#1f2937">NAS (Docker)</text>
+  <text x="684" y="106" font-size="15" fill="#6b7280">세션 동안만 존재하는 경로</text>
+  <rect x="684" y="130" width="452" height="120" rx="8" fill="#ffffff" stroke="#e5d5bb"></rect>
+  <text x="704" y="162" font-size="17" font-weight="600" fill="#1f2937">backend (Express)</text>
+  <text x="704" y="190" font-size="15" fill="#374151">tmpfs /tmp/sejong/&lt;세션&gt;/&lt;문서&gt;</text>
+  <text x="704" y="214" font-size="15" fill="#374151">하트비트 30초 · TTL 15분 · 1분마다 청소</text>
+  <text x="704" y="238" font-size="15" fill="#374151">재시작 시 전부 삭제</text>
+  <line x1="910" y1="250" x2="910" y2="300" stroke="#9ca3af" stroke-width="2.5" marker-end="url(#a)"></line>
+  <line x1="930" y1="300" x2="930" y2="252" stroke="#9ca3af" stroke-width="2.5" marker-end="url(#a)"></line>
+  <text x="944" y="282" font-size="13" fill="#6b7280">JWT 서명 콜백</text>
+  <rect x="684" y="306" width="452" height="96" rx="8" fill="#ffffff" stroke="#e5d5bb"></rect>
+  <text x="704" y="340" font-size="17" font-weight="600" fill="#1f2937">Euro-Office Document Server</text>
+  <text x="704" y="368" font-size="15" fill="#374151">docx · xlsx · pptx · pdf 편집</text>
+  <text x="704" y="390" font-size="15" fill="#374151">저장 시 backend로 결과 파일 URL 전달</text>
+  <text x="684" y="490" font-size="15" fill="#b45309">탭 닫기(pagehide) → 세션 삭제 요청</text>
+</svg>

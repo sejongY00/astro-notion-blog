@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" font-family="'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif">
+  <rect width="1200" height="420" fill="#ffffff"></rect>
+  <text x="40" y="52" font-size="26" font-weight="700" fill="#151515">프로세스 하나가 연 파일 디스크립터 수</text>
+  <text x="40" y="84" font-size="16" fill="#666">눈금 0–1,600 · 빨간 선은 당시 nginx 워커의 열린 파일 한도</text>
+  
+  <g font-size="14" fill="#888" text-anchor="middle">
+    <line x1="300" y1="120" x2="300" y2="350" stroke="#e4e4e7"></line><text x="300" y="375">0</text>
+    <line x1="510" y1="120" x2="510" y2="350" stroke="#e4e4e7"></line><text x="510" y="375">400</text>
+    <line x1="720" y1="120" x2="720" y2="350" stroke="#e4e4e7"></line><text x="720" y="375">800</text>
+    <line x1="930" y1="120" x2="930" y2="350" stroke="#e4e4e7"></line><text x="930" y="375">1,200</text>
+    <line x1="1140" y1="120" x2="1140" y2="350" stroke="#e4e4e7"></line><text x="1140" y="375">1,600</text>
+  </g>
+  
+  <text x="280" y="180" font-size="17" text-anchor="end" fill="#151515">NPMplus nginx 워커 1개</text>
+  <rect x="300" y="155" width="787" height="40" rx="4" fill="#71717a"></rect>
+  <text x="1077" y="181" font-size="16" text-anchor="end" fill="#ffffff" font-weight="700">약 1,500</text>
+  
+  <text x="280" y="280" font-size="17" text-anchor="end" fill="#151515">Caddy (프로세스 전체)</text>
+  <rect x="300" y="255" width="11" height="40" rx="2" fill="#151515"></rect>
+  <text x="322" y="281" font-size="16" fill="#151515" font-weight="700">21</text>
+  
+  <line x1="838" y1="125" x2="838" y2="345" stroke="#dc2626" stroke-width="3"></line>
+  <text x="846" y="140" font-size="15" fill="#dc2626">한도 1,024</text>
+</svg>
