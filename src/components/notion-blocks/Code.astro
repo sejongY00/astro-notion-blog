@@ -39,8 +39,8 @@ const grammer =
       ) : (
         <>
           <div>
-            <button class="copy" data-code={code} data-done-text="Copied!">
-              Copy
+            <button class="copy" data-code={code} data-done-text="복사됨">
+              복사
             </button>
           </div>
           <pre><code set:html={Prism.highlight(code, grammer, language)} /></pre>
@@ -78,32 +78,37 @@ const grammer =
   .code {
     display: block;
     width: 100%;
-    margin-bottom: 0.6rem;
+    margin: 8px 0 24px;
   }
   .code > div {
-    background: rgb(247, 246, 243);
-    border-radius: var(--radius);
+    position: relative;
+    background: #2d2d2d;
+    border-radius: 10px;
   }
   .code > div div {
-    display: flex;
-    justify-content: flex-end;
+    position: absolute;
+    top: 10px;
+    right: 10px;
   }
   .code button.copy {
     display: block;
-    width: 4rem;
+    padding: 2px 8px;
     border: 0;
-    border-radius: var(--radius);
-    background-color: rgba(227, 226, 224, 0.5);
-    color: var(--fg);
-    line-height: 1.2rem;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ccc;
+    font-size: 12px;
+    line-height: 1.6;
     cursor: pointer;
   }
   .code pre {
     display: block;
     overflow: auto;
-    padding: 0.8rem 2rem 2rem;
-    font-size: 0.9rem;
-    line-height: 1.2rem;
+    padding: 16px 70px 16px 18px;
+    color: #ccc;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
     white-space: pre;
     width: 100px;
     min-width: 100%;
@@ -112,19 +117,24 @@ const grammer =
       height: 10px;
     }
     &::-webkit-scrollbar-thumb {
-      background: rgb(211, 209, 203);
+      background: #555;
     }
     &::-webkit-scrollbar-track {
-      background: rgb(237, 236, 233);
+      background: #2d2d2d;
     }
   }
   .code pre.mermaid {
     padding: 2rem;
+    background: #fff;
+    border-radius: 10px;
   }
   .code pre code {
-    color: var(--fg);
+    margin: 0;
     padding: 0;
-    background: rgb(247, 246, 243) !important;
+    border: 0;
     border-radius: 0;
+    background: none !important;
+    color: inherit;
+    font-size: inherit;
   }
 </style>

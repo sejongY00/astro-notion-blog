@@ -1,30 +1,21 @@
 ---
 import * as interfaces from '../../lib/interfaces.ts'
 import {
-  getPosts,
   getAllPosts,
-  getRankedPosts,
   getPostBySlug,
-  getPostsByTag,
   getBlock,
-  getAllTags,
   getAllBlocksByBlockId,
   downloadFile,
 } from '../../lib/notion/client.ts'
 import {
   getPostLink,
+  getTagLink,
   filePath,
   extractTargetBlocks,
 } from '../../lib/blog-helpers.ts'
 import Layout from '../../layouts/Layout.astro'
-import PostDate from '../../components/PostDate.astro'
-import PostTags from '../../components/PostTags.astro'
-import PostTitle from '../../components/PostTitle.astro'
 import PostBody from '../../components/PostBody.astro'
-import PostRelativeLink from '../../components/PostRelativeLink.astro'
-import BlogPostsLink from '../../components/BlogPostsLink.astro'
-import BlogTagsLink from '../../components/BlogTagsLink.astro'
-import styles from '../../styles/blog.module.css'
+import PostMeta from '../../components/PostMeta.astro'
 
 export async function getStaticPaths() {
   const posts = await getAllPosts()
@@ -38,15 +29,10 @@ if (!post) {
   throw new Error(`Post not found. slug: ${slug}`)
 }
 
-const [blocks, allPosts, rankedPosts, recentPosts, tags, postsHavingSameTag] =
-  await Promise.all([
-    getAllBlocksByBlockId(post.PageId),
-    getAllPosts(),
-    getRankedPosts(),
-    getPosts(5),
-    getAllTags(),
-    getPostsByTag(post.Tags[0]?.name, 6),
-  ])
+const [blocks, allPosts] = await Promise.all([
+  getAllBlocksByBlockId(post.PageId),
+  getAllPosts(),
+])
 
 const fileAtacchedBlocks = extractTargetBlocks('image', blocks)
   .concat(extractTargetBlocks('file', blocks))
@@ -88,9 +74,18 @@ const prevPost = allPosts[currentPostIndex + 1]
 const nextPost = allPosts[currentPostIndex - 1]
 
 let ogImage = ''
+let coverImage = ''
 if (post.FeaturedImage && post.FeaturedImage.Url) {
   ogImage = new URL(filePath(new URL(post.FeaturedImage.Url)), Astro.site)
+  coverImage = import.meta.env.DEV
+    ? post.FeaturedImage.Url
+    : filePath(new URL(post.FeaturedImage.Url))
 }
+
+const relatives = [
+  prevPost && { post: prevPost, label: '이전 글' },
+  nextPost && { post: nextPost, label: '다음 글' },
+].filter(Boolean) as { post: interfaces.Post; label: string }[]
 ---
 
 <Layout
@@ -99,29 +94,164 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
   path={getPostLink(post.Slug)}
   ogImage={ogImage}
 >
-  <div slot="main" class={styles.main}>
-    <div class={styles.post}>
-      <PostDate post={post} />
-      <PostTags post={post} />
-      <PostTitle post={post} enableLink={false} />
+  <article slot="main">
+    {
+      coverImage && (
+        <div class="cover">
+          <img src={coverImage} alt="" />
+        </div>
+      )
+    }
+
+    <header class="post-header wrap-small">
+      <h1>{post.Title}</h1>
+      {post.Excerpt && <p class="excerpt">{post.Excerpt}</p>}
+      <PostMeta post={post} center />
+    </header>
+
+    <div class="wrap-small">
       <PostBody blocks={blocks} />
-      <PostTags post={post} />
-
-      <footer>
-        <PostRelativeLink prevPost={prevPost} nextPost={nextPost} />
-      </footer>
     </div>
-  </div>
 
-  <div slot="aside" class="aside">
-    <BlogPostsLink
-      heading="Posts in the same category"
-      posts={postsHavingSameTag.filter(
-        (p: interfaces.Post) => p.Slug !== post.Slug
-      )}
-    />
-    <BlogPostsLink heading="Recommended" posts={rankedPosts} />
-    <BlogPostsLink heading="Latest posts" posts={recentPosts} />
-    <BlogTagsLink heading="Categories" tags={tags} />
-  </div>
+    <footer class="post-footer wrap-small">
+      {
+        post.Tags.length > 0 && (
+          <p class="tags">
+            <strong>태그:</strong>{' '}
+            {post.Tags.map((tag, i) => (
+              <>{i > 0 && ', '}<a href={getTagLink(tag.name)}>{tag.name}</a></>
+            ))}
+          </p>
+        )
+      }
+    </footer>
+
+    {
+      relatives.length > 0 && (
+        <nav class="relatives">
+          {relatives.map(({ post: p, label }) => (
+            <a href={getPostLink(p.Slug)} class:list={['relative', { next: label === '다음 글' }]}>
+              {p.Tags[0] && <span class="chip">{p.Tags[0].name}</span>}
+              <strong>{p.Title}</strong>
+              <span class="label">{label}</span>
+            </a>
+          ))}
+        </nav>
+      )
+    }
+  </article>
 </Layout>
+
+<style>
+  .cover {
+    max-width: 900px;
+    margin: 60px auto 0;
+    padding: 0 20px;
+  }
+  .cover img {
+    display: block;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+  }
+  .post-header {
+    padding-top: 50px;
+    padding-bottom: 60px;
+    text-align: center;
+  }
+  .post-header h1 {
+    margin: 0 0 20px;
+    font-size: 50px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  .excerpt {
+    margin: 0 0 22px;
+    font-size: 17px;
+    line-height: 1.9;
+    color: var(--muted);
+  }
+  .post-footer {
+    margin-top: 40px;
+  }
+  .tags {
+    margin: 0;
+    padding-top: 30px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-heading);
+    font-size: 14px;
+    text-align: center;
+  }
+  .tags strong {
+    color: var(--heading);
+  }
+  .tags a {
+    color: var(--heading);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .relatives {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px;
+    max-width: 900px;
+    margin: 70px auto 0;
+    padding: 0 20px;
+  }
+  .relative {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 26px 28px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease;
+  }
+  .relative:hover {
+    transform: translateY(-3px);
+  }
+  .relative.next {
+    grid-column: 2;
+    align-items: flex-end;
+    text-align: right;
+  }
+  .relative .chip {
+    padding: 2px 9px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.05);
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .relative strong {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    line-height: 1.4;
+    color: var(--heading);
+  }
+  .relative .label {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  @media (max-width: 700px) {
+    .cover {
+      margin-top: 30px;
+    }
+    .post-header {
+      padding-top: 36px;
+      padding-bottom: 40px;
+    }
+    .post-header h1 {
+      font-size: 32px;
+    }
+    .relatives {
+      grid-template-columns: 1fr;
+    }
+    .relative.next {
+      grid-column: 1;
+    }
+  }
+</style>

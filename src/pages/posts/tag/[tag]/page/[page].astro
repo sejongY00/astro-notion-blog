@@ -1,24 +1,16 @@
 ---
 import type { SelectProperty } from '../../../../../lib/interfaces.ts'
 import {
+  getAllPosts,
   getPostsByTagAndPage,
-  getRankedPosts,
   getAllTags,
   getNumberOfPagesByTag,
 } from '../../../../../lib/notion/client.ts'
 import Layout from '../../../../../layouts/Layout.astro'
 import NoContents from '../../../../../components/NoContents.astro'
-import PostDate from '../../../../../components/PostDate.astro'
-import PostTags from '../../../../../components/PostTags.astro'
-import PostTitle from '../../../../../components/PostTitle.astro'
-import PostFeaturedImage from '../../../../../components/PostFeaturedImage.astro'
-import PostExcerpt from '../../../../../components/PostExcerpt.astro'
-import ReadMoreLink from '../../../../../components/ReadMoreLink.astro'
+import PostCard from '../../../../../components/PostCard.astro'
 import Pagination from '../../../../../components/Pagination.astro'
-import BlogPostsLink from '../../../../../components/BlogPostsLink.astro'
-import BlogTagsLink from '../../../../../components/BlogTagsLink.astro'
-import styles from '../../../../../styles/blog.module.css'
-import '../../../../../styles/notion-color.css'
+import ListHeader from '../../../../../components/ListHeader.astro'
 
 export async function getStaticPaths() {
   const allTags = await getAllTags()
@@ -40,75 +32,26 @@ export async function getStaticPaths() {
 
 const { tag, page } = Astro.params
 
-const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
+const [posts, allPosts, numberOfPages] = await Promise.all([
   getPostsByTagAndPage(tag, parseInt(page, 10)),
-  getRankedPosts(),
-  getAllTags(),
+  getAllPosts(),
   getNumberOfPagesByTag(tag),
 ])
-
-const currentTag = posts[0].Tags.find((t) => t.name === tag)
+const count = allPosts.filter((p) => p.Tags.some((t) => t.name === tag)).length
 ---
 
-<Layout
-  title={`Posts in ${tag} ${page}/${numberOfPages}`}
-  path={`/posts/tag/${tag}/page/${page}`}
->
-  <div slot="main" class={styles.main}>
-    <header>
-      <div class="tag-container">
-        <span class={`tag ${currentTag.color}`}>{tag}</span>
-        {page}/{numberOfPages}
-      </div>
-    </header>
-
-    {
-      posts.length === 0 ? (
-        <NoContents contents={posts} />
-      ) : (
-        posts.map((post) => (
-          <div class={styles.post} key={post.Slug}>
-            <PostDate post={post} />
-            <PostTags post={post} />
-            <PostTitle post={post} />
-            <PostFeaturedImage post={post} />
-            <PostExcerpt post={post} />
-            <ReadMoreLink post={post} />
-          </div>
-        ))
-      )
-    }
-
-    <footer>
-      <Pagination
-        tag={tag}
-        currentPage={parseInt(page, 10)}
-        numberOfPages={numberOfPages}
-      />
-    </footer>
-  </div>
-
-  <div slot="aside" class={styles.aside}>
-    <BlogPostsLink heading="Recommended" posts={rankedPosts} />
-    <BlogTagsLink heading="Categories" tags={tags} />
+<Layout title={`${tag} ${page}쪽`} path={`/posts/tag/${tag}/page/${page}`}>
+  <div slot="main">
+    <ListHeader label="태그" title={tag} count={count} />
+    <section class="wrap">
+      {
+        posts.length === 0 ? (
+          <NoContents contents={posts} />
+        ) : (
+          posts.map((post) => <PostCard post={post} />)
+        )
+      }
+      <Pagination tag={tag} currentPage={parseInt(page, 10)} numberOfPages={numberOfPages} />
+    </section>
   </div>
 </Layout>
-
-<style>
-  .tag-container {
-    margin: 0;
-    line-height: 1.3;
-    font-size: 1.2rem;
-    font-weight: normal;
-  }
-  @media (max-width: 640px) {
-    .tag-container {
-      font-size: 1.15rem;
-    }
-  }
-  .tag-container span.tag {
-    border-radius: 4px;
-    padding: 3px 9px;
-    background: var(--tag-bg-light-gray);
-  }
-</style>

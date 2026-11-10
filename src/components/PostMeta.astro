@@ -1,0 +1,51 @@
+---
+import type { Post } from '../lib/interfaces.ts'
+import { getTagLink } from '../lib/blog-helpers.ts'
+import { getKoreanDate, getReadingMinutes } from '../lib/post-meta.ts'
+
+export interface Props {
+  post: Post
+  center?: boolean
+}
+
+const { post, center = false } = Astro.props
+const primaryTag = post.Tags?.[0]
+const minutes = await getReadingMinutes(post.PageId)
+---
+
+<div class:list={['meta', { center }]}>
+  {primaryTag && <a class="chip" href={getTagLink(primaryTag.name)}>{primaryTag.name}</a>}
+  {post.Date && <time datetime={post.Date.slice(0, 10)}>{getKoreanDate(post.Date)}</time>}
+  <span class="sep">/</span>
+  <span>{minutes}분 분량</span>
+</div>
+
+<style>
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 18px;
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .meta.center {
+    justify-content: center;
+  }
+  .chip {
+    padding: 4px 9px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text);
+    line-height: 1.9;
+  }
+  .chip:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--heading);
+  }
+  .sep {
+    opacity: 0.6;
+  }
+</style>

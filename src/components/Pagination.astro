@@ -4,66 +4,53 @@ import { getPageLink } from '../lib/blog-helpers.ts'
 export interface Props {
   currentPage: number
   numberOfPages: number
-  tag: string
+  tag?: string
 }
 
 const { currentPage, numberOfPages, tag = '' } = Astro.props
-
-const isFirstPage = currentPage === 1
-const isLastPage = currentPage === numberOfPages
-
-const startPage = currentPage - 2 < 1 ? 1 : currentPage - 2
-const endPage =
-  currentPage + 2 > numberOfPages ? numberOfPages : currentPage + 2
-
-let pages = []
-for (let i = startPage; i <= endPage; i++) {
-  pages.push(i)
-}
 ---
 
-<div class="pagination">
-  <a href={getPageLink(1, tag)} class={isFirstPage && 'inactive'}>&lt;&lt;</a>
-  {
-    pages.map((p: number) => (
-      <a href={getPageLink(p, tag)} class={p === currentPage && 'inactive'}>
-        {p}
-      </a>
-    ))
-  }
-  <a href={getPageLink(numberOfPages, tag)} class={isLastPage && 'inactive'}
-    >&gt;&gt;</a
-  >
-</div>
+{
+  numberOfPages > 1 && (
+    <nav class="pagination">
+      {currentPage > 1 ? (
+        <a href={getPageLink(currentPage - 1, tag)}>최신 글</a>
+      ) : (
+        <span />
+      )}
+      <span class="page-number">
+        {numberOfPages}쪽 중 {currentPage}쪽
+      </span>
+      {currentPage < numberOfPages ? (
+        <a href={getPageLink(currentPage + 1, tag)}>이전 글</a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}
 
 <style>
   .pagination {
-    display: flex;
-    width: 100%;
-    margin: 0 auto;
-    color: var(--fg);
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
+    margin: 20px 0 0;
+    font-family: var(--font-heading);
+    font-size: 14px;
   }
   .pagination a {
-    display: block;
-    width: 2.4rem;
-    height: 3rem;
-    margin: 0 0.4rem;
-    border-radius: var(--radius);
-    background: #f4f4f4;
-    color: inherit;
-    font-size: 0.85rem;
-    text-align: center;
-    text-decoration: underline;
+    justify-self: start;
+    padding: 8px 18px;
+    border-radius: 6px;
+    background: #151515;
+    color: #fff;
     font-weight: 500;
-    line-height: 3rem;
   }
-  .pagination a:hover:not(.inactive) {
-    background: #ddd;
+  .pagination a:last-child {
+    justify-self: end;
   }
-  .pagination a.inactive {
-    color: #999;
-    text-decoration: none;
+  .page-number {
+    color: var(--muted);
   }
 </style>

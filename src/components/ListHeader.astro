@@ -1,0 +1,46 @@
+---
+export interface Props {
+  label: string
+  title: string
+  count?: number
+}
+
+const { label, title, count } = Astro.props
+---
+
+<header class="list-header wrap-small">
+  <span>{label}</span>
+  <h1>{title}</h1>
+  {count !== undefined && <p>글 {count}편</p>}
+</header>
+
+<style>
+  .list-header {
+    padding: 70px 20px 90px;
+    text-align: center;
+  }
+  span {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  h1 {
+    margin: 4px 0 6px;
+    font-size: 50px;
+    line-height: 1.2;
+  }
+  p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  @media (max-width: 700px) {
+    .list-header {
+      padding: 50px 20px 60px;
+    }
+    h1 {
+      font-size: 38px;
+    }
+  }
+</style>

@@ -44,11 +44,40 @@ const ghostSlugs = [
   'netbird-to-headscale',
   'npmplus-to-caddy',
 ];
+// 예전 Ghost 태그 주소(/tag/영문슬러그/)와 새 태그 이름의 짝
+const ghostTags = {
+  dev: '개발',
+  server: '서버',
+  homseobeo: '홈서버',
+  neteuweokeu: '네트워크',
+  peurojegteu: '프로젝트',
+  teureobeulsyuting: '트러블슈팅',
+  caddy: 'Caddy',
+  'claude-code': 'Claude Code',
+  docker: 'Docker',
+  headscale: 'headscale',
+  'hermes-agent': 'Hermes Agent',
+  jenkins: 'Jenkins',
+  linux: 'Linux',
+  mcp: 'MCP',
+  moonlight: 'Moonlight',
+  'opencode-go': 'OpenCode Go',
+  'steam-deck': 'Steam Deck',
+  tailscale: 'Tailscale',
+  telegram: 'Telegram',
+  vpn: 'VPN',
+  vue: 'Vue',
+};
+
 // Astro는 이동할 주소 앞에 base를 붙여주지 않으므로 직접 붙인다.
 const base = BASE_PATH.replace(/\/$/, '');
 const redirects = Object.fromEntries([
   ...ghostSlugs.map((slug) => [`/${slug}`, `${base}/posts/${slug}`]),
   ['/rss', `${base}/feed`],
+  ...Object.entries(ghostTags).map(([slug, name]) => [
+    `/tag/${slug}`,
+    `${base}/posts/tag/${name}`,
+  ]),
 ]);
 
 // https://astro.build/config

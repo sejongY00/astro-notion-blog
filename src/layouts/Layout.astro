@@ -1,11 +1,16 @@
 ---
 import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX } from '../server-constants.ts'
 import { getDatabase } from '../lib/notion/client.ts'
-import { getNavLink, getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
+import { getNavLink, getStaticFilePath, getTagLink } from '../lib/blog-helpers.ts'
 import '../styles/syntax-coloring.css'
+import '@fontsource/bricolage-grotesque/400.css'
+import '@fontsource/bricolage-grotesque/500.css'
+import '@fontsource/bricolage-grotesque/700.css'
+import '@fontsource/public-sans/400.css'
+import '@fontsource/public-sans/700.css'
+import '../styles/slate.css'
 import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import SearchModal from '../components/SearchModal.astro'
-import SearchButton from '../components/SearchButton.astro'
 
 export interface Props {
   title: string
@@ -26,31 +31,16 @@ const siteOGImage = new URL(
   Astro.site
 )
 
-let coverImageURL: string
-if (database.Cover) {
-  if (database.Cover.Type === 'external') {
-    coverImageURL = database.Cover.Url
-  } else if (database.Cover.Type === 'file') {
-    try {
-      coverImageURL = filePath(new URL(database.Cover.Url))
-    } catch {
-      console.log('Invalid DB cover image URL: ', database.Cover?.Url)
-    }
-  }
-}
-
-let customIconURL: string
-if (database.Icon && database.Icon.Type === 'file') {
-  try {
-    customIconURL = filePath(new URL(database.Icon.Url))
-  } catch {
-    console.log('Invalid DB custom icon URL: ', database.Icon?.Url)
-  }
-}
+const navItems = [
+  { label: '홈', href: getNavLink('/'), current: path === '/' },
+  { label: '개발', href: getTagLink('개발'), current: path === '/posts/tag/개발' },
+  { label: '서버', href: getTagLink('서버'), current: path === '/posts/tag/서버' },
+  { label: '소개', href: getNavLink('/about'), current: path === '/about' },
+]
 ---
 
 <!DOCTYPE html>
-<html lang="en" prefix="og: https://ogp.me/ns#">
+<html lang="ko" prefix="og: https://ogp.me/ns#">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="max-image-preview:large" />
@@ -77,73 +67,48 @@ if (database.Icon && database.Icon.Type === 'file') {
   </head>
   <body>
     <GoogleAnalytics trackingId={PUBLIC_GA_TRACKING_ID} />
-    <div class="container">
-      <header>
-        {
-          coverImageURL && (
-            <div class="cover">
-              <img src={coverImageURL} alt="Site cover image" loading="lazy" />
-            </div>
-          )
-        }
-      </header>
-
-      <div>
-        <main>
-          <div class="content">
-            <header>
-              <h1>
-                <a href={getNavLink('/')}>
-                  {
-                    database.Icon && database.Icon.Type === 'emoji' ? (
-                      <>
-                        <span>{database.Icon.Emoji}</span>
-                        {database.Title}
-                      </>
-                    ) : database.Icon && database.Icon.Type === 'external' ? (
-                      <>
-                        <img src={database.Icon.Url} alt="Site icon image" />
-                        {database.Title}
-                      </>
-                    ) : database.Icon && database.Icon.Type === 'file' ? (
-                      <>
-                        <img
-                          src={customIconURL}
-                          class="custom-icon"
-                          alt="Site icon image"
-                        />
-                        {database.Title}
-                      </>
-                    ) : (
-                      database.Title
-                    )
-                  }
-                </a>
-              </h1>
-              <div class="description">
-                {database.Description}
-              </div>
-            </header>
-
-            <slot name="main" />
-
-            <footer>
-              <div>
-                <span>Powered by&nbsp;</span>
-                <a href="https://github.com/otoyo/astro-notion-blog"
-                  >astro-notion-blog</a
-                >
-              </div>
-            </footer>
-          </div>
-        </main>
-
-        <aside>
-          <SearchButton />
-          <slot name="aside" />
-        </aside>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="logo" href={getNavLink('/')}>{database.Title}</a>
+        <nav class="main-nav">
+          <ul>
+            {
+              navItems.map((item) => (
+                <li>
+                  <a href={item.href} class:list={{ current: item.current }}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+            <li>
+              <button class="open-search-modal nav-search" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                검색
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
-    </div>
+    </header>
+
+    <main>
+      <slot name="main" />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <a class="footer-logo" href={getNavLink('/')}>{database.Title}</a>
+        <p class="footer-desc">{database.Description}</p>
+      </div>
+      <div class="footer-bottom">
+        Notion + <a href="https://astro.build/">Astro</a>로 만들었습니다
+      </div>
+    </footer>
+
+    <a href="#" class="back-to-top" aria-label="맨 위로">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path></svg>
+    </a>
 
     <SearchModal />
     {
@@ -151,289 +116,142 @@ if (database.Icon && database.Icon.Type === 'file') {
         <script src={getStaticFilePath('/scripts/fslightbox.js')} />
       )
     }
+    <script>
+      const toTop = document.querySelector('.back-to-top')
+      const toggle = () => toTop?.classList.toggle('visible', window.scrollY > 400)
+      window.addEventListener('scroll', toggle, { passive: true })
+      toggle()
+      toTop?.addEventListener('click', (e) => {
+        e.preventDefault()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      })
+
+      // Cmd+K / Ctrl+K로 검색 열기
+      document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+          e.preventDefault()
+          document.querySelector<HTMLButtonElement>('.open-search-modal')?.click()
+        }
+      })
+    </script>
   </body>
 </html>
 
 <style>
-  .container {
-    min-height: 100vh;
+  .site-header {
+    padding: 40px 0 0;
   }
-
-  .container > div {
+  .header-inner {
     display: flex;
-    max-width: 1280px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 54px;
   }
-  @media (max-width: 640px) {
-    .container > div {
-      display: block;
-    }
+  .logo {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.3px;
+  }
+  .main-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .main-nav a,
+  .nav-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-heading);
+    font-size: 15px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .main-nav a:hover,
+  .nav-search:hover,
+  .main-nav a.current {
+    color: #151515;
+  }
+  .main-nav a.current {
+    font-weight: 700;
   }
 
   main {
-    flex: 1;
-    order: 2;
-    justify-content: space-between;
-  }
-  @media (max-width: 640px) {
-    main {
-      order: 1;
-    }
+    min-height: 60vh;
   }
 
-  aside {
-    order: 1;
-    width: 300px;
-    padding: 20px 20px;
-    background-color: #f4f4f4;
-  }
-  @media (max-width: 640px) {
-    aside {
-      order: 2;
-      width: 100%;
-    }
-  }
-
-  div.cover {
-  }
-  div.cover img {
-    display: block;
-    width: 100%;
-    height: 20vh;
-    object-fit: cover;
-    object-position: center 60%;
-  }
-
-  div.content {
-    padding: 20px 40px;
-  }
-  @media (max-width: 640px) {
-    div.content {
-      padding: 0 18px;
-    }
-  }
-
-  main header {
-    padding: 20px 0 20px;
-  }
-  main header h1 {
-    font-weight: 700;
-    color: #333;
-  }
-  main header h1 a {
-    display: block;
-    color: inherit;
-  }
-  main header h1 a:hover {
-    color: inherit;
-  }
-  main header h1 a span,
-  main header h1 a img {
-    display: inline-block;
-    font-size: 1.1em;
-  }
-  main header h1 a span {
-    margin-right: 0.3em;
-    margin-left: -0.1rem;
-  }
-  main header h1 a img {
-    width: 1.2em;
-    height: 1.2em;
-    margin-right: 0.2em;
-    margin-left: -0.3rem;
-    vertical-align: sub;
-  }
-  main header h1 a img.custom-icon {
-    border-radius: var(--radius);
-  }
-
-  main header div.description {
-    padding: 0.3rem 0 0.6rem;
-    font-size: 0.95rem;
-  }
-
-  main footer {
-    margin: 30px 0 10px;
+  .site-footer {
+    margin-top: 120px;
+    padding: 50px 0 0;
+    border-top: 1px solid var(--line);
     text-align: center;
-    font-size: 0.75rem;
   }
-  @media (max-width: 640px) {
-    main footer {
-      margin: 0 auto 30px;
-    }
+  .footer-logo {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--heading);
   }
-  main footer span {
-    color: #777;
+  .footer-desc {
+    margin: 8px 0 40px;
+    font-size: 15px;
+    color: var(--muted);
   }
-  main footer a {
-    color: inherit;
+  .footer-bottom {
+    padding: 22px 20px 30px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-heading);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .footer-bottom a {
+    color: var(--heading);
+    font-weight: 700;
     text-decoration: underline;
   }
-</style>
 
-<style is:global>
-  :root {
-    --gap-quarter: 0.25rem;
-    --gap-half: 0.5rem;
-    --gap: 1rem;
-    --gap-double: 2rem;
-
-    --bg: #fff;
-    --fg: #333;
-    --accents-1: #666;
-    --accents-2: #666;
-    --accents-3: #666;
-    --geist-foreground: #000;
-    --geist-success: #690;
-
-    --radius: 4px;
-
-    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-      'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-      'Helvetica Neue', sans-serif;
-    --font-mono: SFMono-Regular, Menlo, Consolas, 'PT Mono', 'Liberation Mono',
-      Courier, monospace;
+  .back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #151515;
+    color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  * {
-    box-sizing: border-box;
-    word-break: break-word;
-  }
-
-  html,
-  body {
-    padding: 0;
-    margin: 0;
-    font-size: 16px;
-  }
-
-  body {
-    min-height: 100vh;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      Helvetica, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
-      'Hiragino Sans GB', メイリオ, Meiryo, 'Apple Color Emoji', Arial,
-      sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
-
-    /*background-image: radial-gradient(#ddd 1px, transparent 1px),
-      radial-gradient(#ddd 1px, transparent 1px);*/
-    background-position: 0 0, 25px 25px;
-    background-attachment: fixed;
-    background-size: 50px 50px;
-
-    /* Hack */
-    overflow-x: hidden;
-
-    -webkit-font-smoothing: antialiased;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  figure {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #999;
-    line-height: 1.8rem;
-  }
-
-  a {
-    color: var(--accents-1);
-    text-decoration: none;
-  }
-  a:hover {
-    color: var(--accents-1);
-  }
-
-  mark {
-    padding: var(--gap-quarter);
-    border-radius: var(--radius);
-    background: rgba(247, 212, 255, 0.8);
-  }
-
-  h1 {
-    margin: 0;
-    color: var(--fg);
-    font-size: 2rem;
-    font-weight: 700;
-  }
-
-  @media (max-width: 640px) {
-    h1 {
-      font-size: 1.6rem;
+  @media (max-width: 700px) {
+    .site-header {
+      padding-top: 24px;
     }
-  }
-
-  ol {
-    color: #222;
-    font-weight: 400;
-    font-size: 0.9rem;
-    line-height: 1.8rem;
-  }
-  p,
-  ul {
-    color: #222;
-    font-weight: 400;
-    font-size: 1rem;
-    line-height: 1.8rem;
-  }
-  ul,
-  ol {
-    margin: 0;
-    padding-inline-start: 1.5rem;
-  }
-  pre {
-    margin: 0;
-    white-space: pre;
-    tab-size: 2;
-  }
-  pre :global(code) {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    margin: 0.3rem 0;
-    background-color: #333;
-  }
-
-  code {
-    font-size: 0.9rem;
-    background: rgba(135, 131, 120, 0.15);
-    color: #eb5757;
-    padding: 0.25rem;
-    border-radius: var(--radius);
-    font-family: var(--font-mono);
-  }
-
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-    border-collapse: collapse;
-  }
-
-  table tr {
-    vertical-align: top;
-  }
-
-  table th {
-    font-weight: 600;
-    background-color: #f4f4f4;
-  }
-
-  table td,
-  table th {
-    font-size: 0.9rem;
-    border: 1px solid #e4e4e4;
-    padding: 0.5rem 1rem;
-    text-align: left;
-    line-height: 1.2rem;
-  }
-  table td::after {
-    content: '';
-    display: inline-block;
-    min-height: 0.9rem;
+    .header-inner {
+      flex-direction: column;
+      gap: 14px;
+    }
+    .logo {
+      font-size: 26px;
+    }
+    .main-nav ul {
+      gap: 18px;
+    }
   }
 </style>
