@@ -1,17 +1,22 @@
 ---
-import { getAllPosts } from '../../lib/notion/client.ts'
+import { NUMBER_OF_POSTS_PER_PAGE } from '../../server-constants.ts'
+import { getPosts, getNumberOfPages } from '../../lib/notion/client.ts'
 import Layout from '../../layouts/Layout.astro'
 import NoContents from '../../components/NoContents.astro'
 import PostCard from '../../components/PostCard.astro'
+import Pagination from '../../components/Pagination.astro'
 import ListHeader from '../../components/ListHeader.astro'
 
-// 메인은 최근 3편만 보여 주므로, 모든 글은 여기서 한 번에 본다.
-const posts = await getAllPosts()
+// 전체 글 1쪽. 2쪽부터는 posts/page/[page].astro가 이어서 보여 준다.
+const [posts, numberOfPages] = await Promise.all([
+  getPosts(NUMBER_OF_POSTS_PER_PAGE),
+  getNumberOfPages(),
+])
 ---
 
 <Layout title="전체 글" path="/posts">
   <div slot="main">
-    <ListHeader label="전체 글" title="모든 글" count={posts.length} />
+    <ListHeader label="전체 글" title={`${numberOfPages}쪽 중 1쪽`} />
     <section class="wrap">
       {
         posts.length === 0 ? (
@@ -20,6 +25,7 @@ const posts = await getAllPosts()
           posts.map((post) => <PostCard post={post} />)
         )
       }
+      <Pagination currentPage={1} numberOfPages={numberOfPages} />
     </section>
   </div>
 </Layout>

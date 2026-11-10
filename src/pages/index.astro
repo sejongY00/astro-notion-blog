@@ -1,5 +1,5 @@
 ---
-import { getPosts } from '../lib/notion/client.ts'
+import { getAllPosts } from '../lib/notion/client.ts'
 import { getNavLink } from '../lib/blog-helpers.ts'
 import Layout from '../layouts/Layout.astro'
 import NoContents from '../components/NoContents.astro'
@@ -7,7 +7,9 @@ import PostCard from '../components/PostCard.astro'
 
 // 메인에는 최근 글 3편만 두고, 나머지는 /posts(전체 글)에서 본다.
 const NUMBER_OF_RECENT_POSTS = 3
-const posts = await getPosts(NUMBER_OF_RECENT_POSTS)
+const allPosts = await getAllPosts()
+const posts = allPosts.slice(0, NUMBER_OF_RECENT_POSTS)
+const hasMore = allPosts.length > NUMBER_OF_RECENT_POSTS
 ---
 
 <Layout>
@@ -35,7 +37,7 @@ const posts = await getPosts(NUMBER_OF_RECENT_POSTS)
         )
       }
       {
-        posts.length > 0 && (
+        hasMore && (
           <div class="all-posts">
             <a href={getNavLink('/posts')}>전체 글 보기 →</a>
           </div>

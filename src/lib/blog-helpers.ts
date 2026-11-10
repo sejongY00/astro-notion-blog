@@ -189,7 +189,8 @@ export const getTagLink = (tag: string) => {
 
 export const getPageLink = (page: number, tag: string) => {
   if (page === 1) {
-    return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/')
+    // 메인은 최근 글 3편뿐이라, 전체 글 1쪽은 /posts다.
+    return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/posts')
   }
   return tag
     ? pathJoin(
