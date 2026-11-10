@@ -1,15 +1,13 @@
 ---
-import { NUMBER_OF_POSTS_PER_PAGE } from '../server-constants.ts'
-import { getPosts, getNumberOfPages } from '../lib/notion/client.ts'
+import { getPosts } from '../lib/notion/client.ts'
+import { getNavLink } from '../lib/blog-helpers.ts'
 import Layout from '../layouts/Layout.astro'
 import NoContents from '../components/NoContents.astro'
 import PostCard from '../components/PostCard.astro'
-import Pagination from '../components/Pagination.astro'
 
-const [posts, numberOfPages] = await Promise.all([
-  getPosts(NUMBER_OF_POSTS_PER_PAGE),
-  getNumberOfPages(),
-])
+// 메인에는 최근 글 3편만 두고, 나머지는 /posts(전체 글)에서 본다.
+const NUMBER_OF_RECENT_POSTS = 3
+const posts = await getPosts(NUMBER_OF_RECENT_POSTS)
 ---
 
 <Layout>
@@ -36,12 +34,35 @@ const [posts, numberOfPages] = await Promise.all([
           posts.map((post) => <PostCard post={post} />)
         )
       }
-      <Pagination currentPage={1} numberOfPages={numberOfPages} />
+      {
+        posts.length > 0 && (
+          <div class="all-posts">
+            <a href={getNavLink('/posts')}>전체 글 보기 →</a>
+          </div>
+        )
+      }
     </section>
   </div>
 </Layout>
 
 <style>
+  .all-posts {
+    margin: 10px 0 0;
+    text-align: center;
+  }
+  .all-posts a {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 6px;
+    background: #151515;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .all-posts a:hover {
+    background: #333;
+  }
   .hero {
     padding: 70px 20px 110px;
     text-align: center;
